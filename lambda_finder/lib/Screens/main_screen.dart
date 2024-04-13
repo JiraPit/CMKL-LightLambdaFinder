@@ -22,6 +22,7 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text(
           'Lambda Finder',
@@ -30,135 +31,140 @@ class _MainScreenState extends State<MainScreen> {
         backgroundColor: Colors.blueGrey.shade800,
         centerTitle: true,
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-        child: Center(
-          child: Column(
-            children: [
-              GestureDetector(
-                onTap: () async {
-                  image = await ImagePickerWeb.getImageAsBytes();
-                  setState(() {});
-                },
-                child: Container(
-                  height: 300,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    image: image != null
-                        ? DecorationImage(
-                            image: MemoryImage(image!),
-                            fit: BoxFit.contain,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 15,
+          ),
+          child: Center(
+            child: Column(
+              children: [
+                GestureDetector(
+                  onTap: () async {
+                    image = await ImagePickerWeb.getImageAsBytes();
+                    setState(() {});
+                  },
+                  child: Container(
+                    height: 300,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      image: image != null
+                          ? DecorationImage(
+                              image: MemoryImage(image!),
+                              fit: BoxFit.contain,
+                            )
+                          : null,
+                      color: Colors.white,
+                      border: Border.all(
+                        color: Colors.blueGrey.shade800,
+                        width: 4,
+                      ),
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: image == null
+                        ? const Center(
+                            child: Icon(
+                              Icons.camera_alt,
+                              size: 100,
+                              color: Colors.blueGrey,
+                            ),
                           )
                         : null,
-                    color: Colors.white,
-                    border: Border.all(
-                      color: Colors.blueGrey.shade800,
-                      width: 4,
-                    ),
-                    borderRadius: BorderRadius.circular(30),
                   ),
-                  child: image == null
-                      ? const Center(
-                          child: Icon(
-                            Icons.camera_alt,
-                            size: 100,
-                            color: Colors.blueGrey,
-                          ),
-                        )
-                      : null,
                 ),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              valueField('D Value:', 'Enter D value', dController),
-              const SizedBox(
-                height: 20,
-              ),
-              valueField('L Value:', 'Enter L value', lController),
-              const SizedBox(
-                height: 20,
-              ),
-              Row(
-                children: [
-                  const Text(
-                    'Unit:',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 20,
-                    ),
-                  ),
-                  const SizedBox(
-                    width: 20,
-                  ),
-                  DropdownButton<String>(
-                    value: unit,
-                    items: const [
-                      DropdownMenuItem(
-                        value: 'm',
-                        child: Text('Meters'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'cm',
-                        child: Text('Centimeters'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'mm',
-                        child: Text('Millimeters'),
-                      ),
-                    ],
-                    onChanged: (String? value) {
-                      setState(() {
-                        unit = value ?? 'Meters';
-                      });
-                    },
-                    hint: const Text('Select Unit'),
-                  ),
-                ],
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              GestureDetector(
-                onTap: () async {
-                  if (image == null) return;
-                  if (dController.text.isEmpty) return;
-                  if (lController.text.isEmpty) return;
-                  if (unit.isEmpty) return;
-                  showLoadingDialog();
-                  String? result = await calculate(
-                    image: image!,
-                    d: dController.text,
-                    l: lController.text,
-                    unit: unit,
-                  );
-                  result = double.parse(result ?? "0").toStringAsFixed(4);
-                  Navigator.pop(context);
-                  if (result == "0") {
-                    showResultDialog('Failed to calculate');
-                  } else {
-                    showResultDialog('Wave length = $result nm');
-                  }
-                },
-                child: Container(
-                  width: double.infinity,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    color: Colors.blueGrey.shade800,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: const Center(
-                    child: Text(
-                      'Calculate',
+                const SizedBox(
+                  height: 20,
+                ),
+                valueField('D Value:', 'Enter D value', dController),
+                const SizedBox(
+                  height: 20,
+                ),
+                valueField('L Value:', 'Enter L value', lController),
+                const SizedBox(
+                  height: 20,
+                ),
+                Row(
+                  children: [
+                    const Text(
+                      'Unit:',
                       style: TextStyle(
-                        color: Colors.white,
+                        color: Colors.black,
                         fontSize: 20,
                       ),
                     ),
+                    const SizedBox(
+                      width: 20,
+                    ),
+                    DropdownButton<String>(
+                      value: unit,
+                      items: const [
+                        DropdownMenuItem(
+                          value: 'm',
+                          child: Text('Meters'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'cm',
+                          child: Text('Centimeters'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'mm',
+                          child: Text('Millimeters'),
+                        ),
+                      ],
+                      onChanged: (String? value) {
+                        setState(() {
+                          unit = value ?? 'Meters';
+                        });
+                      },
+                      hint: const Text('Select Unit'),
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                GestureDetector(
+                  onTap: () async {
+                    if (image == null) return;
+                    if (dController.text.isEmpty) return;
+                    if (lController.text.isEmpty) return;
+                    if (unit.isEmpty) return;
+                    showLoadingDialog();
+                    String? result = await calculate(
+                      image: image!,
+                      d: dController.text,
+                      l: lController.text,
+                      unit: unit,
+                    );
+                    result = double.parse(result ?? "0").toStringAsFixed(4);
+                    Navigator.pop(context);
+                    if (result == "0") {
+                      showResultDialog('Failed to calculate');
+                    } else {
+                      showResultDialog('Wave length = $result nm');
+                    }
+                  },
+                  child: Container(
+                    width: double.infinity,
+                    height: 50,
+                    decoration: BoxDecoration(
+                      color: Colors.blueGrey.shade800,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: const Center(
+                      child: Text(
+                        'Calculate',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
